@@ -2,7 +2,7 @@ profile_gitprofile() {
     profile_standard
     
     # Append git to the package list
-    apks="$apks git"
+    apks="$apks git dialog iwd fzf"
     
     # Use our own overlay generator (do not point at the stock DHCP overlay)
     apkovl="scripts/genapkovl-gitprofile.sh"
