@@ -16,7 +16,7 @@ fi
 # Packages that should be installed at boot in addition to alpine-base.
 # Add new packages here (they also need to be in the profile's $apks list so
 # that they are bundled in the ISO's /apks repository).
-extra_packages="git"
+extra_packages="git dialog iwd"
 
 cleanup() {
 	rm -rf "$tmp"
