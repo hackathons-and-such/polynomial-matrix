@@ -34,6 +34,7 @@ makefile() {
 rc_add() {
 	mkdir -p "$tmp"/etc/runlevels/"$2"
 	ln -sf /etc/init.d/"$1" "$tmp"/etc/runlevels/"$2"/"$1"
+    ln -s /etc/init.d/iwd "$tmp"/etc/runlevels/default/iwd
 }
 
 tmp="$(mktemp -d)"
