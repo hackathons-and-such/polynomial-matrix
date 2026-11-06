@@ -32,10 +32,12 @@ makefile() {
 }
 
 rc_add() {
-	mkdir -p "$tmp"/etc/runlevels/"$2"
-	ln -sf /etc/init.d/"$1" "$tmp"/etc/runlevels/"$2"/"$1"
-    ln -s /etc/init.d/iwd "$tmp"/etc/runlevels/default/iwd
+    local service="$1"
+    local runlevel="$2"
+    mkdir -p "$tmp/etc/runlevels/$runlevel"
+    ln -sf /etc/init.d/"$service" "$tmp/etc/runlevels/$runlevel/$service"
 }
+
 
 tmp="$(mktemp -d)"
 trap cleanup EXIT
@@ -67,6 +69,7 @@ rc_add dmesg sysinit
 rc_add mdev sysinit
 rc_add hwdrivers sysinit
 rc_add modloop sysinit
+rc_add iwd sysinit
 
 rc_add hwclock boot
 rc_add modules boot
