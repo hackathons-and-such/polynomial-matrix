@@ -68,6 +68,7 @@ make_image() {
         --outdir "$1" \
         --arch x86_64 \
         --repository https://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository https://dl-cdn.alpinelinux.org/alpine/edge/community \
         --profile gitprofile
 }
 
