@@ -33,12 +33,10 @@ setup_build_environment() {
     fi
 
     cd aports
+    # Installs mkimg.gitprofile.sh and genapkovl-gitprofile.sh. The overlay
+    # generator is self-contained, so the stock genapkovl-dhcp.sh is left alone
+    # and re-running the build does not append duplicate customisations.
     cp "$build_scripts_dir"/* scripts/
-
-    # Safely append extension scripts only if they exist to prevent set -e termination
-    if ls scripts/*.ext.sh >/dev/null 2>&1; then
-        cat scripts/*.ext.sh >> scripts/genapkovl-dhcp.sh
-    fi
 
     # Patch mkimage.sh to remove the deprecated --no-chown flag causing the usermode error
     sed -i 's/--no-chown//g' scripts/mkimage.sh

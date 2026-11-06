@@ -4,8 +4,8 @@ profile_gitprofile() {
     # Append git to the package list
     apks="$apks git"
     
-    # Point to your inline overlay generator script
-    apkovl="scripts/genapkovl-dhcp.sh"
+    # Use our own overlay generator (do not point at the stock DHCP overlay)
+    apkovl="scripts/genapkovl-gitprofile.sh"
     
     local _k _a
     for _k in $kernel_flavors; do
