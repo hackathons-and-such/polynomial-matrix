@@ -13,10 +13,13 @@ if [ -z "$HOSTNAME" ]; then
 	exit 1
 fi
 
+# build.sh stages the overlay tree next to this script so it is available here.
+overlayfs_dir="$(dirname -- "$0")/overlayfs"
+
 # Packages that should be installed at boot in addition to alpine-base.
 # Add new packages here (they also need to be in the profile's $apks list so
 # that they are bundled in the ISO's /apks repository).
-extra_packages="git dialog iwd fzf"
+extra_packages="git dialog iwd fzf python3 py3-mutagen"
 
 cleanup() {
 	rm -rf "$tmp"
@@ -84,4 +87,34 @@ rc_add savecache shutdown
 
 # Add any other custom files/scripts above this line, before the overlay is
 # packed. Anything placed after the tar command will not be included.
-tar -c -C "$tmp" etc | gzip -9n > "$HOSTNAME.apkovl.tar.gz"
+
+# Merge files from src/overlayfs into the image root. Copy last so overlay
+# files take precedence over anything generated above.
+if [ -d "$overlayfs_dir" ]; then
+	cp -a "$overlayfs_dir"/. "$tmp"/
+	# Normalise ownership; files originate on the 9p host share.
+	chown -Rh root:root "$tmp"
+fi
+
+# Wire up the wireless provisioning wizard when the overlay provides it.
+if [ -f "$tmp/usr/local/bin/wifi-setup-wizard.sh" ]; then
+	mkdir -p "$tmp/etc/local.d"
+	makefile root:root 0755 "$tmp/etc/local.d/wifi-wizard.start" <<'EOF'
+#!/bin/sh
+/usr/local/bin/wifi-setup-wizard.sh
+EOF
+	rc_add local default
+fi
+
+mkdir -p /usr/local/partyplace
+makefile root:root 0755 "/usr/local/partyplace/README.md" <<'EOF'
+## Welcome to QuickNAS
+A quick, low cost and simple NAS solution.
+EOF
+
+cat << 'EOF' >> "$tmp/etc/profile"
+    /usr/local/bin/wizard.sh
+EOF
+
+# Pack the whole overlay tree (not just etc) so files outside /etc survive.
+tar -c -C "$tmp" . | gzip -9n > "$HOSTNAME.apkovl.tar.gz"

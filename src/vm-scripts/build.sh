@@ -38,6 +38,14 @@ setup_build_environment() {
     # and re-running the build does not append duplicate customisations.
     cp "$build_scripts_dir"/* scripts/
 
+    # Stage the overlayfs tree next to the generator so the generated apkovl
+    # can merge it into the image root. cp -R (not -a) keeps the staged files
+    # owned by root instead of the host user.
+    if [ -d "$src_mount_path/overlayfs" ]; then
+        rm -rf scripts/overlayfs
+        cp -R "$src_mount_path/overlayfs" scripts/overlayfs
+    fi
+
     # Patch mkimage.sh to remove the deprecated --no-chown flag causing the usermode error
     sed -i 's/--no-chown//g' scripts/mkimage.sh
     

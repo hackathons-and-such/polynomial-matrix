@@ -3,7 +3,7 @@ allocated_ram := "4G"
 shared_dir := "./src"
 
 share_mount_flags := f"-fsdev local,id=sharedir,path='{{shared_dir}}',security_model=mapped-xattr -device virtio-9p-pci,fsdev=sharedir,mount_tag=hostshare"
-opts := f"-enable-kvm -m {{allocated_ram}} -cpu host -smp 8 -nic user {{share_mount_flags}} -serial mon:stdio"
+opts := f"-enable-kvm -m {{allocated_ram}} -cpu host -smp 8 -nic user,hostfwd=tcp::3939-:3939 {{share_mount_flags}} -serial mon:stdio"
 
 @_help:
     just --list
